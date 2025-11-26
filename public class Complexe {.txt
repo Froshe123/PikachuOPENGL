@@ -1,0 +1,74 @@
+public class Complexe {
+    public final double reel;
+    public final double imag;
+
+    public Complexe(double reel, double imag) {
+        this.reel = reel;
+        this.imag = imag;
+    }
+
+    public Complexe ajouter(Complexe autre) {
+        return new Complexe(this.reel + autre.reel, this.imag + autre.imag);
+    }
+    public Complexe soustraire(Complexe autre) {
+        return new Complexe(this.reel - autre.reel, this.imag - autre.imag);
+    }
+    public Complexe multiplier(Complexe autre) {
+        double r = this.reel * autre.reel - this.imag * autre.imag;
+        double i = this.reel * autre.imag + this.imag * autre.reel;
+        return new Complexe(r, i);
+    }
+}
+
+public class TransformeeFourier1D {
+
+    <public static Complexe[] TransformeeFourier1DN(Complexe[] g) {
+        int N = g.length;                   
+        Complexe[] gtransfo = new Complexe[N];  
+
+        for (int u = 0; u < N; u++) {
+            Complexe somme = new Complexe(0, 0);
+
+            for (int x = 0; x < N; x++) {
+                double angle = -2 * Math.PI * u * x / N;
+                Complexe facteur = new Complexe(Math.cos(angle), Math.sin(angle));
+                somme = somme.ajouter(g[x].multiplier(facteur));
+            }
+
+            gtransfo[u] = somme;
+        }
+
+        return gtransfo;
+    }>
+    public static Complexe[] TransformeeFourier1DR(Complexe[] g) {
+    int N = g.length;
+    if (N == 1) return new Complexe[]{ g[0] };
+
+    if (N % 2 != 0) {
+        throw new IllegalArgumentException("le signal est pas fixer a une taille de puissance de 2");
+    }
+    // on cree les tableaux des parties paires et impaires
+    Complexe[] pairs = new Complexe[N / 2];
+    Complexe[] impairs = new Complexe[N / 2];
+
+    // on remplit les tableaux
+    for (int i = 0; i < N / 2; i++) {
+        pairs[i] = g[2 * i];
+        impairs[i] = g[2 * i + 1];
+    }
+    // on fait les calculs 
+    Complexe[] transfoPairs = TransformeeFourier1DR(pairs);
+    Complexe[] transfoImpairs = TransformeeFourier1DR(impairs);
+    Complexe[] gtransfo = new Complexe[N];
+    for (int u = 0; u < N / 2; u++) {
+        double angle = -2 * Math.PI * u / N;
+        Complexe facteur = new Complexe(Math.cos(angle), Math.sin(angle));
+        Complexe temp = facteur.multiplier(transfoImpairs[u]);
+        gtransfo[u] = transfoPairs[u].ajouter(temp);
+        gtransfo[u + N / 2] = transfoPairs[u].soustraire(temp);
+    }
+    return gtransfo;
+}
+
+
+}
